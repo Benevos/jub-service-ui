@@ -85,7 +85,7 @@ npm run dev
 - Network:       http://192.0.0.1:3000
 ```
 
-3. Dirijiase a la dirección local indicada en el mensaje en su navegador, regularmente [localhost:3000](http://localhost:3000). 
+3. Dirijase a la dirección local indicada en el mensaje en su navegador, regularmente [localhost:3000](http://localhost:3000). 
 
 #### Producción
 
