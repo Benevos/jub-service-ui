@@ -47,8 +47,8 @@ export default function Home()
 
       const data = await response.json()
 
-      console.log("OBSERVATORIES")
-      console.log(data)
+      // console.log("OBSERVATORIES")
+      // console.log(data)
 
       dispatch(setObservatoriesData(data))
     }
@@ -87,8 +87,8 @@ export default function Home()
 
       const data = await response.json()
 
-      console.log("OBSERVATORIES DETAILS")
-      console.log(data)
+      //console.log("OBSERVATORIES DETAILS")
+      //console.log(data)
 
       dispatch(setObservatoriesDetailsData(data))
     }
@@ -126,13 +126,13 @@ export default function Home()
 
     if(coincidentObservatoriesDetails.length < 1)
     {
-      console.log(`Error: El servicio "${selectedService.service_id}" no coincide con ningún observatorio.`)
+      //console.log(`Error: El servicio "${selectedService.service_id}" no coincide con ningún observatorio.`)
       dispatch(setCoincidentObservatoriesDetails([]))
       return
     }
 
-    console.log("COINCIDENT OBSERVATORIES")
-    console.log(coincidentObservatoriesDetails)
+    //console.log("COINCIDENT OBSERVATORIES")
+    //console.log(coincidentObservatoriesDetails)
 
     dispatch(setCoincidentObservatoriesDetails(coincidentObservatoriesDetails))
   }

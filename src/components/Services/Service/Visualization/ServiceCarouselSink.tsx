@@ -6,12 +6,14 @@ import { useAppSelector } from '@/lib/hooks'
 import FallbackSlide from './Slides/FallbackSlide'
 import ImageSlide from './Slides/ImageSlide'
 import { GrCaretNext, GrCaretPrevious } from "react-icons/gr";
+import LoadingSlide from './Slides/LoadingSlide'
 
 interface ServiceCarouselProps {
     sources: ProductType[]
+    loading: boolean
 }
 
-function ServiceCarouselSink({ sources }: ServiceCarouselProps) 
+function ServiceCarouselSink({ sources, loading }: ServiceCarouselProps) 
 {
     const servicePerformanceMode = useAppSelector(state => state.services.performanceMode)
 
@@ -42,6 +44,15 @@ function ServiceCarouselSink({ sources }: ServiceCarouselProps)
 
     }, [emblaApi])
 
+    if(loading)
+    {
+        return (
+            <div className='h-[600px] max-md:h-[300px] flex flex-col items-center justify-center bg-black gap-6 '>
+                <div className='h-12 w-12 rounded-full border-4 border-gray-300 border-t-white animate-spin'/>
+            </div>
+        )
+    }
+
 
     if (sources.length === 0)
     {
@@ -61,14 +72,22 @@ function ServiceCarouselSink({ sources }: ServiceCarouselProps)
                 <div className="embla__container h-[600px] max-md:h-[300px] ">
 
                     {
-                        sources.map(source => {
+                        sources.map((source, index) => {
                             const src = `https://apix.tamps.cinvestav.mx/jub/api/v2/products/${source.product_id}/download`
+
+                            const key = `${source.product_id}-${index}`
+
+
+                            const shouldRender =
+                                index === currentIndex ||
+                                index === currentIndex - 1 ||
+                                index === currentIndex + 1
 
                             if(source.metadata?.extension?.toLowerCase() === "html")
                             {
                                 return (
                                     <HtmlSlide
-                                        key={source.product_id}
+                                        key={key}
                                         performance={servicePerformanceMode}
                                         src={src}
                                     />
@@ -77,7 +96,7 @@ function ServiceCarouselSink({ sources }: ServiceCarouselProps)
 
                             return (
                                 <ImageSlide
-                                    key={source.product_id}
+                                    key={key}
                                     alt={source.product_id}
                                     src={src}
                                 />

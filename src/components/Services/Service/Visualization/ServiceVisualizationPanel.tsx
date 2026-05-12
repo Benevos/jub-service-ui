@@ -8,6 +8,8 @@ import ServiceCarouselRandom from './ServiceCarouselRandom'
 import ProductType from '@/types/products'
 import ServiceCarouselSource from './ServiceCarouselSource'
 import { DataSourceType } from '@/types/datasource'
+import { IconButton, Tooltip } from '@mui/material'
+import { LuRefreshCcw } from 'react-icons/lu'
 
 interface RandomImage {
     id: number
@@ -20,12 +22,15 @@ function ServiceVisualizationPanel()
     const coincidentObservatoriesDetails = useAppSelector(state => state.observatories.coincidentDetails)
 
     const [source, setSource] = useState<DataSourceType[]>([])
+    const [loadingSource, setLoadingSource] = useState<boolean>(false)
+    
     const [sinks, setSinks] = useState<ProductType[]>([])
+    const [loadingSinks, setLoadingSinks] = useState<boolean>(false)
 
 
     const fetchServiceSource = async () =>
     {
-        console.log("FETCH")
+        //console.log("FETCH")
    
         if(coincidentObservatoriesDetails.length < 1) 
         {
@@ -52,8 +57,8 @@ function ServiceVisualizationPanel()
 
         const datasource = coincidentObservatory.data_sources[0]
 
-        console.log(datasource)
-
+        
+        setLoadingSource(true)
         const response = await fetch(
         `https://apix.tamps.cinvestav.mx/jub/api/v2/datasources/${datasource.source_id}/query`,
         {
@@ -71,14 +76,17 @@ function ServiceVisualizationPanel()
 
         const data = await response.json()
 
-        console.log("SOURCE")
+        //("SOURCE")
         setSource(data)
+        setLoadingSource(false)
     }
 
     const fetchServiceSink = async () => 
     {
+        console.log("EJEC")
         if(coincidentObservatoriesDetails.length < 1) 
         {
+            console.log("NO OBS")
             setSinks([])
             return
         }
@@ -86,6 +94,8 @@ function ServiceVisualizationPanel()
         //TODO: Esto no deberia ser un arreglo, arreglen JUB
         const coincidentObservatory = coincidentObservatoriesDetails[0]
 
+      
+        setLoadingSinks(true)
         const response = await fetch(
             "https://apix.tamps.cinvestav.mx/jub/api/v2/search",
         {
@@ -104,11 +114,19 @@ function ServiceVisualizationPanel()
         }
       )
 
+      if(!response.ok)
+      {
+        alert("PET FAILED")
+      }
+      console.log("PET END")
+
       const data = await response.json();
 
       console.log("SINKS")
       console.log(data)
       setSinks(data)
+      setLoadingSinks(false)
+      console.log("END")
     }
 
     useEffect(() => {
@@ -124,16 +142,16 @@ function ServiceVisualizationPanel()
             <div>
 
                 <div className='flex items-center justify-center text-lg font-bold p-4 bg-[#e6e6e6]'>
-                    <span>Fuente de datos</span>
+                    <span>Fuentes de datos</span>
                 </div>
 
-                <ServiceCarouselSource source={source}/>
+                <ServiceCarouselSource source={source} loading={loadingSource}/>
 
                 <div className='flex items-center justify-center text-lg font-bold p-4 bg-[#e6e6e6]'>
-                    <span>Producto</span>
+                    <span>Productos</span>
                 </div>
 
-                <ServiceCarouselSink sources={sinks}/>
+                <ServiceCarouselSink sources={sinks} loading={loadingSinks}/>
 
             </div>
 

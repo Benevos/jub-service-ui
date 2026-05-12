@@ -1,23 +1,38 @@
-import { v4 as uuid } from "uuid"
 import { DataSourceType } from '@/types/datasource'
 import { IconButton, Tooltip } from "@mui/material";
-import { IoIosCopy, IoMdCopy } from "react-icons/io";
+import { IoIosCopy } from "react-icons/io";
+import { TbFolderOff } from "react-icons/tb";
 
 interface ServiceCarouselProps {
     source: DataSourceType[]
+    loading: boolean
 }
 
-const paginationModel = { page: 0, pageSize: 25 };
-
-function ServiceCarouselSource({ source }: ServiceCarouselProps) 
+function ServiceCarouselSource({ source, loading }: ServiceCarouselProps) 
 {
+
+    if(loading)
+    {
+        return (
+            <div className='h-[600px] max-md:h-[300px] flex flex-col items-center justify-center bg-black gap-6 '>
+                <div className='h-12 w-12 rounded-full border-4 border-gray-300 border-t-white animate-spin'/>
+            </div>
+        )
+    }
+    
     return (
         <div className="h-[600px] max-md:h-[300px] overflow-x-auto">
 
             {
                 source.length < 1 ? 
                     <div className='w-full h-full bg-black flex items-center justify-center'>
-                        <span className='text-white font-bold text-xl'>Sin datos ligados</span>
+                        <div className='flex flex-col items-center mb-2'>
+                            <TbFolderOff color='white' size={40}/>
+        
+                            <span className='text-white font-bold my-2'>
+                                Sin datos ligados
+                            </span>
+                        </div>
                     </div>
                 :
                     <table className='w-full h-full divide-y border-y border-y-gray-300 divide-gray-300'>

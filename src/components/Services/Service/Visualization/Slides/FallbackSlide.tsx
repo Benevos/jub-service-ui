@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from '@mui/material'
+import { FaRegQuestionCircle } from 'react-icons/fa'
 
 interface FallbackSlideProps {
     href: string
@@ -54,9 +55,13 @@ function FallbackSlide({ href }: FallbackSlideProps)
             
 
             <div className='embla__slide w-full h-full flex flex-col items-center justify-center bg-black'>
-                <span className='text-white font-bold mb-5'>
-                    Formato no soportado directamente
-                </span>
+                <div className='flex flex-col items-center mb-2'>
+                    <FaRegQuestionCircle color='white' size={40}/>
+
+                    <span className='text-white font-bold my-2'>
+                        Formato no soportado directamente
+                    </span>
+                </div>
 
                 <Button
                     variant='contained'

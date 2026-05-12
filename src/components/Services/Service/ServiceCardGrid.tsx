@@ -19,8 +19,8 @@ function ServiceCardGrid({ service }: ServiceCardGridProps)
   
   const handleClick = () =>
   {
-    console.log("SELECTED SERVICE")
-    console.log(service)
+    //console.log("SELECTED SERVICE")
+    //console.log(service)
     dispatch(setSelectedService(service))
     dispatch(setOpenService(true))
   }

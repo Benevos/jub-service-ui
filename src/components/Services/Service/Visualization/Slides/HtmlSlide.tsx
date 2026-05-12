@@ -15,29 +15,46 @@ function HtmlSlide({ src, performance=false }: HtmlSlideProps)
 
     useEffect(() =>
     {
-        if(performance) return
+        if (performance) return
+
+        const controller = new AbortController()
 
         const loadHtml = async () =>
         {
-            const response = await fetch(src)
+            try
+            {
+                const response = await fetch(src, {
+                    signal: controller.signal
+                })
 
-            const blob = await response.blob()
+                const blob = await response.blob()
 
-            const url = URL.createObjectURL(blob)
+                const url = URL.createObjectURL(blob)
 
-            setBlobUrl(url)
+                setBlobUrl(url)
+            }
+            catch(error)
+            {
+                if ((error as Error).name !== "AbortError")
+                {
+                    console.log("Peticion abordata")
+                }
+            }
         }
 
         loadHtml()
 
         return () =>
         {
-            if (blobUrl) {
+            controller.abort()
+
+            if (blobUrl)
+            {
                 URL.revokeObjectURL(blobUrl)
             }
         }
 
-    }, [src])
+    }, [src, performance])
 
     if (performance) {
         return <PerformanceSlide href={src} />

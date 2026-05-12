@@ -85,8 +85,8 @@ function ServicesForm() {
     
           const data = await response.json();
           
-          console.log("SERVICES")
-          console.log(data);
+          //console.log("SERVICES")
+          //console.log(data);
     
           dispatch(setServicesData(data))
     
