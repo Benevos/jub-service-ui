@@ -1,0 +1,41 @@
+@use "embla";
+@use "ripple";
+
+:root {
+  --color-background: #eff3f6
+  --color-primary: #ffffff;
+  --color-secondary: #e6e6e6;
+  --color-secondary-50: #cfcfcf;
+  --color-secondary-100: #757575;
+
+  --color-text-primary: #000000;
+  --color-text-secondary: #757575;
+}
+
+body, html, :root {
+  height: 100%;
+  background-color: #eff3f6;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+.form-shadow {
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.table-head {
+  font-size: small;
+
+}
+
+.table-head-box {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.table-body-box {
+  font-size: small;
+  padding: 10px;
+}
