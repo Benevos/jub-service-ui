@@ -62,38 +62,26 @@ function ServiceCarouselSink({ sources }: ServiceCarouselProps)
 
                     {
                         sources.map(source => {
-                            if(!source.metadata) {
-                                return <FallbackSlide key={source.product_id} href={`https://apix.tamps.cinvestav.mx/jub/api/v2/products/${source.product_id}/download`}/>
-                            }
-                            
-                            if(!source.metadata.extension) {
-                                return <FallbackSlide key={source.product_id} href={`https://apix.tamps.cinvestav.mx/jub/api/v2/products/${source.product_id}/download`}/>
-                            } 
+                            const src = `https://apix.tamps.cinvestav.mx/jub/api/v2/products/${source.product_id}/download`
 
-                            const extension = source.metadata.extension.toLowerCase()
-
-                            switch(extension)
+                            if(source.metadata?.extension?.toLowerCase() === "html")
                             {
-                                case "html": 
-                                {
-                                    return (
-                                        <HtmlSlide 
-                                            performance={servicePerformanceMode}
-                                            key={source.product_id} 
-                                            src={`https://apix.tamps.cinvestav.mx/jub/api/v2/products/${source.product_id}/download`}/>
-                                    )
-                                }
-                                case "jpg":
-                                {
-                                    return (
-                                        <ImageSlide
-                                            alt={source.product_id}
-                                            src={`https://jub.tamps.cinvestav.mx/${source.product_id}/download`}/>
-                                    )
-                                }
+                                return (
+                                    <HtmlSlide
+                                        key={source.product_id}
+                                        performance={servicePerformanceMode}
+                                        src={src}
+                                    />
+                                )
                             }
 
-                            return <React.Fragment key={source.product_id}></React.Fragment>
+                            return (
+                                <ImageSlide
+                                    key={source.product_id}
+                                    alt={source.product_id}
+                                    src={src}
+                                />
+                            )
                         })
                     }
                     

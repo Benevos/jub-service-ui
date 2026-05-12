@@ -22,30 +22,6 @@ function ServiceVisualizationPanel()
     const [source, setSource] = useState<DataSourceType[]>([])
     const [sinks, setSinks] = useState<ProductType[]>([])
 
-    const [randomTwo, setRandomTwo] = useState<RandomImage[]>([])
-    
-    const generateRandomImages = (): RandomImage[] => {
-
-        const formats = ['jpg', 'webp']
-
-        return Array.from({ length: 10 }, (_, index) => {
-
-            const width =
-                Math.floor(Math.random() * (2000 - 100 + 1)) + 100
-
-            const height =
-                Math.floor(Math.random() * (2000 - 100 + 1)) + 100
-
-            const format =
-                formats[Math.floor(Math.random() * formats.length)]
-
-            return {
-                id: index,
-
-                url: `https://picsum.photos/${width}/${height}.${format}`
-            }
-        })
-    }
 
     const fetchServiceSource = async () =>
     {
@@ -89,7 +65,7 @@ function ServiceVisualizationPanel()
             body: JSON.stringify({
                 observatory_id: coincidentObservatory,
                 query: "jub.v1.VS(*).VT(*).VI(*)",
-                limit: 25
+                limit: 25,
             }),
         })
 
@@ -121,7 +97,9 @@ function ServiceVisualizationPanel()
           body: JSON.stringify({
             observatory_id: coincidentObservatory.observatory_id,
             query: "jub.v1.VS(*).VT(*).VI(*)",
-            limit: 10
+            limit: 24,
+            skip: 0,
+            strict: false
           }),
         }
       )
@@ -137,7 +115,6 @@ function ServiceVisualizationPanel()
         // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchServiceSource()
         fetchServiceSink()
-        setRandomTwo(generateRandomImages())
     }, [])
 
 

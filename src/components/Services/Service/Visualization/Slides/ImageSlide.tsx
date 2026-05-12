@@ -1,5 +1,8 @@
+"use client"
+
 import Image from 'next/image'
-import React from 'react'
+import React, { useState } from 'react'
+import FallbackSlide from './FallbackSlide'
 
 interface ImageSlideInterface {
     src: string
@@ -8,16 +11,24 @@ interface ImageSlideInterface {
 
 function ImageSlide({ src, alt }: ImageSlideInterface) 
 {
-    return (
-        <div
-            className="embla__slide relative bg-black"
-        >
+    const [failed, setFailed] = useState(false)
 
+    if (failed)
+    {
+        return (
+            <FallbackSlide href={src}/>
+        )
+    }
+
+    return (
+        <div className="embla__slide relative bg-black">
             <Image
                 src={src}
                 alt={alt}
                 fill
                 className='object-contain'
+                unoptimized
+                onError={() => setFailed(true)}
             />
         </div>
     )
