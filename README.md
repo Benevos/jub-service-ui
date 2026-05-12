@@ -30,15 +30,17 @@ Debe tener una instalación de [Docker](https://docs.docker.com/engine/install/)
 ```bash
     ./run.sh
 ```
-
-2. Visite la ruta [http:localhost:3000](https:localhost:3000) donde se desplegó su contenedor. Si especificó el parámetro `--host-port`, entonces reemplace el puerto con el ingresado en el parámetro.
-
 Parámetros:
 
 | Parámetro            | Descripción                                                | Opcional | Tipo de dato | Valor por defecto |
 |---------------------|------------------------------------------------------------|----------|--------------|------------------|
 | `--host-port`       | Puerto del host donde se expondrá la aplicación            | Sí       | Número (int) | 3000             |
 | `--name`            | Nombre opcional del contenedor Docker. Si no se especifica Docker asignará un nombre aleatorio al contenedor.                     | Sí       | Texto (string)| (sin nombre)     |
+
+
+2. Visite la ruta [http:localhost:3000](https:localhost:3000) donde se desplegó su contenedor. Si especificó el parámetro `--host-port`, entonces reemplace el puerto con el ingresado en el parámetro.
+
+
 
 
 ### Manual
