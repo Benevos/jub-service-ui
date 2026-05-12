@@ -1,0 +1,34 @@
+# Dependencias
+node_modules
+
+# Build output
+.next
+out
+
+# Git
+.git
+.gitignore
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Docker
+Dockerfile
+docker-compose.yml
+
+# Entornos locales
+.env
+.env.local
+.env.development
+.env.production
+
+# IDEs
+.vscode
+.idea
+
+# OS files
+.DS_Store
+Thumbs.db

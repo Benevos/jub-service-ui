@@ -1,9 +1,51 @@
 
+## Tabla de contenido
+
+- [Tabla de contenido](#tabla-de-contenido)
+- [Como ejecutar](#como-ejecutar)
+  - [Docker](#docker)
+    - [Prerrequisitos](#prerrequisitos)
+    - [Producción](#producción)
+  - [Manual](#manual)
+    - [Prerrequisitos](#prerrequisitos-1)
+    - [Desarrollo](#desarrollo)
+    - [Producción](#producción-1)
+
 ## Como ejecutar
 
 Siga los siguientes pasos para desplegar este servicio como le sea conveniente.
 
-### Prerrequisitos
+### Docker
+
+Es posible construir una imágen a partir de `Docker` con los siguientes pasos.
+
+#### Prerrequisitos
+
+Debe tener una instalación de [Docker](https://docs.docker.com/engine/install/) en su sistema operativo.
+
+#### Producción
+
+1. Ejecute el archivo `run.sh` en la raíz de este repositorio y espere a que se construya su imágen y contenedor:
+
+```bash
+    ./run.sh
+```
+
+2. Visite la ruta [http:localhost:3000](https:localhost:3000) donde se desplegó su contenedor. Si especificó el parámetro `--host-port`, entonces reemplace el puerto con el ingresado en el parámetro.
+
+Parámetros:
+
+| Parámetro            | Descripción                                                | Opcional | Tipo de dato | Valor por defecto |
+|---------------------|------------------------------------------------------------|----------|--------------|------------------|
+| `--host-port`       | Puerto del host donde se expondrá la aplicación            | Sí       | Número (int) | 3000             |
+| `--name`            | Nombre opcional del contenedor Docker. Si no se especifica Docker asignará un nombre aleatorio al contenedor.                     | Sí       | Texto (string)| (sin nombre)     |
+
+
+### Manual
+
+Para una configuración manual continue con los siguientes pasos.
+
+#### Prerrequisitos
 
 1. Debe obtener la versión estable mas reciente de [Node.js](https://nodejs.org/en/download) para su sistema.
 
@@ -25,7 +67,7 @@ cd path/to/jub-service-ui
 npm install
 ```
 
-### Desarrollo
+#### Desarrollo
 
 1. Una vez satisfechos los prerrequisitos, ejecute el siguiente comando para iniciar un entorno de desarrollo:
 
@@ -43,7 +85,7 @@ npm run dev
 
 3. Dirijiase a la dirección local indicada en el mensaje en su navegador, regularmente [localhost:3000](http://localhost:3000). 
 
-### Producción
+#### Producción
 
 1. Una vez satisfechos los prerrequisitos, ejecute el siguiente comando para iniciar un entorno de producción:
 
