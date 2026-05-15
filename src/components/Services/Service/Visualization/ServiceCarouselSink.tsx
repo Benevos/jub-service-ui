@@ -7,6 +7,7 @@ import FallbackSlide from './Slides/FallbackSlide'
 import ImageSlide from './Slides/ImageSlide'
 import { GrCaretNext, GrCaretPrevious } from "react-icons/gr";
 import LoadingSlide from './Slides/LoadingSlide'
+import NoDataScreen from './NoDataScreen'
 
 interface ServiceCarouselProps {
     sources: ProductType[]
@@ -57,9 +58,7 @@ function ServiceCarouselSink({ sources, loading }: ServiceCarouselProps)
     if (sources.length === 0)
     {
         return (
-            <div className="h-[600px] max-md:h-[300px] bg-black text-white font-bold flex items-center justify-center text-lg">
-                <span>Sin datos ligados</span>
-            </div>
+            <NoDataScreen/>
         )
     }
 

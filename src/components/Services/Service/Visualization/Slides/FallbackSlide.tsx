@@ -1,5 +1,7 @@
 "use client"
 
+import { showSnackbar } from '@/lib/features/snackbar/snackbarSlice'
+import { useAppDispatch } from '@/lib/hooks'
 import { Button } from '@mui/material'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 
@@ -9,6 +11,8 @@ interface FallbackSlideProps {
 
 function FallbackSlide({ href }: FallbackSlideProps) 
 {
+    const dispatch = useAppDispatch()
+
     const handleDownload = async () =>
     {
         try
@@ -46,7 +50,14 @@ function FallbackSlide({ href }: FallbackSlideProps)
         }
         catch(error)
         {
-            alert(error)
+            dispatch(showSnackbar({
+                severity: "error",
+                message: `${error}`,
+                anchorOrigin: {
+                    vertical: "top",
+                    horizontal: "center"
+                }
+            }))
         }
     }
 

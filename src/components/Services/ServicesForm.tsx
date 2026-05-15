@@ -7,6 +7,7 @@ import { GoServer } from 'react-icons/go'
 import { IoReload } from 'react-icons/io5'
 import { MdContentCopy } from 'react-icons/md'
 import { PiBracketsCurlyBold } from 'react-icons/pi'
+import { showSnackbar } from '@/lib/features/snackbar/snackbarSlice'
 
 type ServiceFilters = {
   name: string;
@@ -27,7 +28,6 @@ function ServicesForm() {
         visibility: "all",
     });
 
-    const [openSnackBar, setOpenSnackbar] = useState<boolean>(false)
 
     const buildJubQuery = (filters: ServiceFilters): string =>
     {
@@ -126,144 +126,147 @@ function ServicesForm() {
         })
     }
 
-    const handleCopyClick = () =>
+    const handleCopyClick = async () =>
     {
-        setOpenSnackbar(true)
+        try
+        {
+            await navigator.clipboard.writeText(jubQuery);
+
+            dispatch(showSnackbar({
+                message: "Consulta copiada",
+                severity: "success",
+                anchorOrigin: {
+                    vertical: "bottom",
+                    horizontal: "center"
+                }
+            }));
+        }
+        catch (error)
+        {
+            console.error(error);
+
+            dispatch(showSnackbar({
+                message: "No se pudo copiar la consulta",
+                severity: "error",
+                anchorOrigin: {
+                    vertical: "bottom",
+                    horizontal: "center"
+                }
+            }));
+        }
     }
 
-    const handleCloseSnackbar = async (
-        event: React.SyntheticEvent | Event,
-        reason?: SnackbarCloseReason,
-    ) => {
-        if (reason === 'clickaway') {
-          return;
-        }
-    
-        await navigator.clipboard.writeText(jubQuery);
-        setOpenSnackbar(false);
-    };
+    return ( 
+        <form className="bg-white form-shadow p-6 rounded-2xl" onSubmit={handleSubmit}>
+            <div className="w-full flex gap-4 max-md:flex-col">
 
-    return (
+                <div className="flex flex-col gap-2.5 flex-2">
 
-        <>
-            <Snackbar 
-                open={openSnackBar} 
-                onClose={handleCloseSnackbar}
-                autoHideDuration={1000} 
-                message="Consulta copiada"/>
-            
-                <form className="bg-white form-shadow p-6 rounded-2xl" onSubmit={handleSubmit}>
-                <div className="w-full flex gap-4 max-md:flex-col">
-
-                    <div className="flex flex-col gap-2.5 flex-2">
-
-                        <div className="flex items-center gap-1">
-                            <div className="bg-[#e6e6e6] rounded-lg h-8 w-8 text-xs flex justify-center items-center">
-                                <FaSearch/>
-                            </div>
-                            <label className="font-bold text-sm">Nombre o palabra clave</label>
+                    <div className="flex items-center gap-1">
+                        <div className="bg-[#e6e6e6] rounded-lg h-8 w-8 text-xs flex justify-center items-center">
+                            <FaSearch/>
                         </div>
-
-                        <TextField 
-                            fullWidth
-                            label="Nombre de servicio" 
-                            name="name" 
-                            value={serviceFilters.name}
-                            onChange={handleTextChange}/>
+                        <label className="font-bold text-sm">Nombre o palabra clave</label>
                     </div>
 
-                    <div className="flex flex-col gap-2.5 flex-1">
-                        <div className="flex items-center gap-1">
-                            <div className="bg-[#e6e6e6] rounded-lg h-8 w-8 text-sm flex justify-center items-center">
-                                <GoServer/>
-                            </div>
+                    <TextField 
+                        fullWidth
+                        label="Nombre de servicio" 
+                        name="name" 
+                        value={serviceFilters.name}
+                        onChange={handleTextChange}/>
+                </div>
 
-                            <label className="font-bold text-sm">Proveedor</label>
+                <div className="flex flex-col gap-2.5 flex-1">
+                    <div className="flex items-center gap-1">
+                        <div className="bg-[#e6e6e6] rounded-lg h-8 w-8 text-sm flex justify-center items-center">
+                            <GoServer/>
                         </div>
 
-                        <Select
-                            fullWidth
-                            name="provider"
-                            value={serviceFilters.provider}
-                            onChange={handleSelectChange}
-                        >
-                                <MenuItem value={"all"}>Todos</MenuItem>
-                                <MenuItem value={"NEZ"}>Nez</MenuItem>
-                                <MenuItem value={"XELHUA"}>Xelhua</MenuItem>
-                                <MenuItem value={"EXTERNAL"}>Externo</MenuItem>
-                                <MenuItem value={"OTHER"}>Otro</MenuItem>
-                            </Select>
+                        <label className="font-bold text-sm">Proveedor</label>
                     </div>
 
-
-                    <div className="flex flex-col gap-2.5 flex-1">
-                        <div className="flex items-center gap-1">
-                            <div className="bg-[#e6e6e6] rounded-lg h-8 w-8 text-sm flex justify-center items-center">
-                                <FaRegEye/>
-                            </div>
-
-                            <label className="font-bold text-sm">Visibilidad</label>
-                        </div>
-
-                        <Select
-                            fullWidth
-                            name="visibility"
-                            value={serviceFilters.visibility}
-                            onChange={handleSelectChange}
-                        >
+                    <Select
+                        fullWidth
+                        name="provider"
+                        value={serviceFilters.provider}
+                        onChange={handleSelectChange}
+                    >
                             <MenuItem value={"all"}>Todos</MenuItem>
-                            <MenuItem value={"public"}>Públicos</MenuItem>
-                            <MenuItem value={"private"}>Privados</MenuItem>
+                            <MenuItem value={"NEZ"}>Nez</MenuItem>
+                            <MenuItem value={"XELHUA"}>Xelhua</MenuItem>
+                            <MenuItem value={"EXTERNAL"}>Externo</MenuItem>
+                            <MenuItem value={"OTHER"}>Otro</MenuItem>
                         </Select>
-                    </div>
                 </div>
 
-                <hr className="border-[#e6e6e6] my-4"/>
 
-                <div className="flex justify-between max-md:flex-col max-md:items-center max-md:gap-3">
-
-                    <div className="flex items-center gap-2">
-                    <PiBracketsCurlyBold className="text-[#757575]"/>
-
-                    <label className="text-sm font-bold text-[#757575]">Consulta:</label>
-
-                    <Tooltip title="Copiar">
-                        <IconButton size="small" onClick={handleCopyClick}>
-                            <MdContentCopy/>
-                        </IconButton>
-                    </Tooltip>
-
-                        <div className="text-sm bg-[#e6e6e6] text-[#757575] py-1 px-2 rounded-2xl overflow-x-auto
-                                    max-w-[350px] max-md:max-w-[150px]">
-                            {jubQuery}
+                <div className="flex flex-col gap-2.5 flex-1">
+                    <div className="flex items-center gap-1">
+                        <div className="bg-[#e6e6e6] rounded-lg h-8 w-8 text-sm flex justify-center items-center">
+                            <FaRegEye/>
                         </div>
+
+                        <label className="font-bold text-sm">Visibilidad</label>
                     </div>
 
-                    <div className="flex gap-2">
-                        <Button 
-                            variant="text" 
-                            onClick={handleCleanClick}
-                            sx={{color: "black"}}
-                            startIcon={<IoReload size={15}/>}
-                        >
-                            LIMPIAR
-                        </Button>
-
-                        <Button 
-                        type="submit"
-                        variant="contained" 
-                        disabled={observatoriesLoading}
-                        loading={loading}
-                        sx={{backgroundColor: "#cfcfcf", color: "black"}}
-                        startIcon={<FaSearch size={15}/>}>
-                            BUSCAR
-                        </Button>
-                    </div>
-
+                    <Select
+                        fullWidth
+                        name="visibility"
+                        value={serviceFilters.visibility}
+                        onChange={handleSelectChange}
+                    >
+                        <MenuItem value={"all"}>Todos</MenuItem>
+                        <MenuItem value={"public"}>Públicos</MenuItem>
+                        <MenuItem value={"private"}>Privados</MenuItem>
+                    </Select>
                 </div>
-            </form>
-        </>
-        
+            </div>
+
+            <hr className="border-[#e6e6e6] my-4"/>
+
+            <div className="flex justify-between max-md:flex-col max-md:items-center max-md:gap-3">
+
+                <div className="flex items-center gap-2">
+                <PiBracketsCurlyBold className="text-[#757575]"/>
+
+                <label className="text-sm font-bold text-[#757575]">Consulta:</label>
+
+                <Tooltip title="Copiar">
+                    <IconButton size="small" onClick={handleCopyClick}>
+                        <MdContentCopy/>
+                    </IconButton>
+                </Tooltip>
+
+                    <div className="text-sm bg-[#e6e6e6] text-[#757575] py-1 px-2 rounded-2xl overflow-x-auto
+                                max-w-[350px] max-md:max-w-[150px]">
+                        {jubQuery}
+                    </div>
+                </div>
+
+                <div className="flex gap-2">
+                    <Button 
+                        variant="text" 
+                        onClick={handleCleanClick}
+                        sx={{color: "black"}}
+                        startIcon={<IoReload size={15}/>}
+                    >
+                        LIMPIAR
+                    </Button>
+
+                    <Button 
+                    type="submit"
+                    variant="contained" 
+                    disabled={observatoriesLoading}
+                    loading={loading}
+                    sx={{backgroundColor: "#cfcfcf", color: "black"}}
+                    startIcon={<FaSearch size={15}/>}>
+                        BUSCAR
+                    </Button>
+                </div>
+
+            </div>
+        </form>
     )
 }
 

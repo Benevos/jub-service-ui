@@ -3,6 +3,7 @@ import { Roboto } from "next/font/google";
 import "../scss/globals.scss";
 import "./tailwind.css"
 import Providers from "@/components/Providers";
+import GlobalSnackbar from "@/components/GlobalSnackbar";
 
 const roboto = Roboto({ 
   subsets: ['latin'], 
@@ -26,6 +27,8 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <Providers>
+          <GlobalSnackbar/>
+
           {children}
         </Providers>
       </body>

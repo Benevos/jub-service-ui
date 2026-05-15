@@ -4,6 +4,7 @@ import ServiceOverview from "@/components/Services/Service/ServiceOverview";
 import ServicesDisplay from "@/components/Services/ServicesDisplay";
 import ServicesForm from "@/components/Services/ServicesForm";
 import { setCoincidentObservatoriesDetails, setObservatoriesData, setObservatoriesDetailsData, setObservatoriesLoading} from "@/lib/features/observatories/observatoriesSlice";
+import { showSnackbar } from "@/lib/features/snackbar/snackbarSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { ObservatoryDetailsType } from "@/types/observatory";
 import { useEffect } from "react";
@@ -42,7 +43,7 @@ export default function Home()
       )
 
       if (!response.ok) {
-        throw new Error("Error en la petición")
+        throw new Error("Error al obtener observatorios")
       }
 
       const data = await response.json()
@@ -54,7 +55,14 @@ export default function Home()
     }
     catch(error)
     {
-      console.error(error)
+      dispatch(showSnackbar({
+        message: "Error crítico: No se pudieron obtener los observatorios.",
+        severity: "error",
+        anchorOrigin: {
+          vertical: "top",
+          horizontal: "center"
+        }
+      }))
     }
   }
 
@@ -162,7 +170,7 @@ export default function Home()
       <div className="w-full max-w-[1480px] py-8 px-4">
 
         <div className="flex flex-col items-center mb-6">
-          <h1 className="text-[48px] font-black leading-14">
+          <h1 className="text-[48px] font-black leading-14 text-center">
             Malla de servicios
           </h1>
 

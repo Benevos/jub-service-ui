@@ -2,6 +2,7 @@ import { DataSourceType } from '@/types/datasource'
 import { IconButton, Tooltip } from "@mui/material";
 import { IoIosCopy } from "react-icons/io";
 import { TbFolderOff } from "react-icons/tb";
+import NoDataScreen from './NoDataScreen';
 
 interface ServiceCarouselProps {
     source: DataSourceType[]
@@ -25,15 +26,7 @@ function ServiceCarouselSource({ source, loading }: ServiceCarouselProps)
 
             {
                 source.length < 1 ? 
-                    <div className='w-full h-full bg-black flex items-center justify-center'>
-                        <div className='flex flex-col items-center mb-2'>
-                            <TbFolderOff color='white' size={40}/>
-        
-                            <span className='text-white font-bold my-2'>
-                                Sin datos ligados
-                            </span>
-                        </div>
-                    </div>
+                    <NoDataScreen/>
                 :
                     <table className='w-full h-full divide-y border-y border-y-gray-300 divide-gray-300'>
                         <thead>

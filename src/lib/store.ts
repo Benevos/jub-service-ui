@@ -1,13 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit'
 import servicesReducer from "./features/services/servicesSlice"
 import observatoriesReducer from "./features/observatories/observatoriesSlice";
-
+import snackbarReducer from "./features/snackbar/snackbarSlice";
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
         services: servicesReducer,
-        observatories: observatoriesReducer
+        observatories: observatoriesReducer,
+        snackbar: snackbarReducer,
     }
   })
 }

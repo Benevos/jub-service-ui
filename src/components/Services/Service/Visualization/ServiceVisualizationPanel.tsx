@@ -10,6 +10,8 @@ import ServiceCarouselSource from './ServiceCarouselSource'
 import { DataSourceType } from '@/types/datasource'
 import { IconButton, Tooltip } from '@mui/material'
 import { LuRefreshCcw } from 'react-icons/lu'
+import { useDispatch } from 'react-redux'
+import { showSnackbar } from '@/lib/features/snackbar/snackbarSlice'
 
 interface RandomImage {
     id: number
@@ -19,6 +21,8 @@ interface RandomImage {
 function ServiceVisualizationPanel() 
 {
     
+    const dispatch = useDispatch()
+
     const coincidentObservatoriesDetails = useAppSelector(state => state.observatories.coincidentDetails)
 
     const [source, setSource] = useState<DataSourceType[]>([])
@@ -83,10 +87,9 @@ function ServiceVisualizationPanel()
 
     const fetchServiceSink = async () => 
     {
-        console.log("EJEC")
+
         if(coincidentObservatoriesDetails.length < 1) 
         {
-            console.log("NO OBS")
             setSinks([])
             return
         }
@@ -96,37 +99,58 @@ function ServiceVisualizationPanel()
 
       
         setLoadingSinks(true)
-        const response = await fetch(
-            "https://apix.tamps.cinvestav.mx/jub/api/v2/search",
+
+        try 
         {
-            cache: "no-store",
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            observatory_id: coincidentObservatory.observatory_id,
-            query: "jub.v1.VS(*).VT(*).VI(*)",
-            limit: 24,
-            skip: 0,
-            strict: false
-          }),
+            const response = await fetch(
+                "https://apix.tamps.cinvestav.mx/jub/api/v2/search",
+                {
+                    cache: "no-store",
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    observatory_id: coincidentObservatory.observatory_id,
+                    query: "jub.v1.VS(*).VT(*).VI(*)",
+                    limit: 24,
+                    skip: 0,
+                    strict: false
+                }),
+                }
+            )
+
+            if(!response.ok)
+            {
+                throw new Error(
+                    `HTTP ${response.status}: ${response.statusText}`
+                );
+            }
+
+            const data = await response.json();
+
+            setSinks(data)
         }
-      )
-
-      if(!response.ok)
-      {
-        alert("PET FAILED")
-      }
-      console.log("PET END")
-
-      const data = await response.json();
-
-      console.log("SINKS")
-      console.log(data)
-      setSinks(data)
-      setLoadingSinks(false)
-      console.log("END")
+        catch(error)
+        {
+            const errorMessage =
+                error instanceof Error
+                    ? error.message
+                    : "Ocurrió un error inesperado";
+            
+            dispatch(showSnackbar({
+                message: errorMessage,
+                severity: "error",
+                anchorOrigin: {
+                    vertical: "top",
+                    horizontal: "center"
+                }
+            }));
+        }
+        finally
+        {
+            setLoadingSinks(false)    
+        }
     }
 
     useEffect(() => {
