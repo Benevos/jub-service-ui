@@ -1,8 +1,6 @@
 import { DataSourceType } from "./datasource"
 import ServiceType from "./service"
 
-
-
 export type ObservatoryType = {
     observatory_id: string
     title: string

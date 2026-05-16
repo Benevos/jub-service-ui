@@ -13,7 +13,7 @@ interface ServiceCarouselProps {
     loading: boolean
 }
 
-function ServiceCarouselSource({ source, loading }: ServiceCarouselProps) 
+function ServiceCarouselStructuredSource({ source, loading }: ServiceCarouselProps) 
 {
     const CustomSpatialRenderer = ({ value } : CustomCellRendererProps<DataSourceType, number>) => (
         <span className='bg-[#e6e6e6] rounded-full px-2 py-1'>{value}</span>
@@ -236,4 +236,4 @@ function ServiceCarouselSource({ source, loading }: ServiceCarouselProps)
     )
 }
 
-export default ServiceCarouselSource
+export default ServiceCarouselStructuredSource

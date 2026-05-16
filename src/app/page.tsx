@@ -9,6 +9,7 @@ import { showSnackbar } from "@/lib/features/snackbar/snackbarSlice";
 import { useAppRequiredAuth, useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { ObservatoryDetailsType } from "@/types/observatory";
 import { useEffect } from "react";
+import { metadata } from "./layout";
 
 
 export function Home() 
@@ -107,7 +108,6 @@ export function Home()
 
       //console.log("OBSERVATORIES DETAILS")
       //console.log(data)
-
       dispatch(setObservatoriesDetailsData(data))
     }
     catch(error)
@@ -157,8 +157,8 @@ export function Home()
 
   useEffect(() =>
   {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchObservatories()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth])
 
   useEffect(() => 
@@ -169,7 +169,6 @@ export function Home()
 
   useEffect(() => 
   {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchObservatoriesDetails()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [observatories])
@@ -181,8 +180,8 @@ export function Home()
         <div className="w-full max-w-[1480px] py-8 px-4">
 
           <div className="flex flex-col items-center mb-6">
-            <h1 className="text-[48px] font-black leading-14 text-center">
-              Malla de servicios
+            <h1 className="text-[48px] max-md:text-xl font-black leading-14 text-center max-md:leading-6">
+              Plataforma de ciencia de datos: ecosistema JUB (Nez y Xelhua)
             </h1>
 
             <label className="text-[#757575] text-center text-[1rem] tracking-wide">
