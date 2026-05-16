@@ -3,20 +3,12 @@
 import { TabPanel } from '@mui/lab'
 import { useEffect, useState } from 'react'
 import ServiceCarouselSink from './ServiceCarouselSink'
-import { useAppSelector } from '@/lib/hooks'
-import ServiceCarouselRandom from './ServiceCarouselRandom'
+import { useAppRequiredAuth, useAppSelector } from '@/lib/hooks'
 import ProductType from '@/types/products'
 import ServiceCarouselSource from './ServiceCarouselSource'
 import { DataSourceType } from '@/types/datasource'
-import { IconButton, Tooltip } from '@mui/material'
-import { LuRefreshCcw } from 'react-icons/lu'
 import { useDispatch } from 'react-redux'
 import { showSnackbar } from '@/lib/features/snackbar/snackbarSlice'
-
-interface RandomImage {
-    id: number
-    url: string
-}
 
 function ServiceVisualizationPanel() 
 {
@@ -24,6 +16,8 @@ function ServiceVisualizationPanel()
     const dispatch = useDispatch()
 
     const coincidentObservatoriesDetails = useAppSelector(state => state.observatories.coincidentDetails)
+
+    const auth = useAppRequiredAuth()
 
     const [source, setSource] = useState<DataSourceType[]>([])
     const [loadingSource, setLoadingSource] = useState<boolean>(false)
@@ -109,6 +103,8 @@ function ServiceVisualizationPanel()
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${auth.access_token}`,
+                    "Temporal-Secret-Key": auth.temporal_secret_key,
                 },
                 body: JSON.stringify({
                     observatory_id: coincidentObservatory.observatory_id,

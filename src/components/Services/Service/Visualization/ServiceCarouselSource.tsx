@@ -1,8 +1,12 @@
 import { DataSourceType } from '@/types/datasource'
-import { IconButton, Tooltip } from "@mui/material";
-import { IoIosCopy } from "react-icons/io";
-import { TbFolderOff } from "react-icons/tb";
+import { AllCommunityModule, ColDef } from "ag-grid-community";
+import { AgGridProvider, AgGridReact, CustomCellRendererProps } from 'ag-grid-react';
 import NoDataScreen from './NoDataScreen';
+import { useEffect, useMemo, useState } from 'react';
+import { Button, Dialog, DialogContent, DialogTitle, IconButton, Tooltip } from '@mui/material';
+import { FaRegEye } from 'react-icons/fa';
+import { RxCross2 } from 'react-icons/rx';
+import { PiBracketsCurlyBold } from 'react-icons/pi';
 
 interface ServiceCarouselProps {
     source: DataSourceType[]
@@ -11,6 +15,190 @@ interface ServiceCarouselProps {
 
 function ServiceCarouselSource({ source, loading }: ServiceCarouselProps) 
 {
+    const CustomSpatialRenderer = ({ value } : CustomCellRendererProps<DataSourceType, number>) => (
+        <span className='bg-[#e6e6e6] rounded-full px-2 py-1'>{value}</span>
+    )
+
+    //TODO
+    const CustomInterestRenderer = ({ value } : CustomCellRendererProps<DataSourceType, string[]>) => {
+        if (!value || value.length < 1) 
+        {
+            return (
+                <div className='h-full w-full flex items-center justify-center'>
+                    <span>-</span>
+                </div>
+            )
+        }
+
+        return value.map(val => <span key={val} className='bg-[#e6e6e6] rounded-full px-2 py-1'>{val}</span>)
+    }
+
+    const CustomNumericRenderer = ({ value } : CustomCellRendererProps<DataSourceType, Record<string, string | number>>) => {
+
+        if (!value || Object.keys(value).length < 1) 
+        {
+            return (
+                <div className='h-full w-full flex items-center justify-center'>
+                    <span>-</span>
+                </div>
+            )
+        }
+
+        return (
+            <div className='w-full h-full flex flex-wrap gap-1 max-w-[400px] py-2'>
+                {
+                    Object.entries(value).map(
+                        ([key, val]) => <div key={key} className='bg-[#e6e6e6] rounded-full text-[10px] h-5 px-1.5 
+                                                                    flex items-center justify-center'>
+                            {
+                                `${key.toUpperCase()}: ${
+                                    typeof val === "number"
+                                        ? val.toFixed(0)
+                                        : val
+                                }`
+                            }
+                        </div>
+                    )
+                    }
+            </div>
+        )
+    }
+
+    const CustomDetailsRenderer = (
+    {
+        value
+    }: CustomCellRendererProps<
+        DataSourceType,
+        Record<string, string | number | boolean>
+    >
+    ) => {
+
+        const [open, setOpen] = useState(false);
+
+        const handleClose = () =>
+        {
+            setOpen(false)
+        }
+
+        return (
+            <>
+
+                <div className="w-full h-full flex items-center justify-center">
+
+                    <Tooltip title="Mostrar crudo">
+                        <IconButton
+                            onClick={() => setOpen(true)}
+                            size="small"
+                        >
+                            <FaRegEye/>
+                        </IconButton>
+                    </Tooltip>
+
+                </div>
+
+                <Dialog
+                    open={open}
+                    onClose={() => setOpen(false)}
+                    maxWidth="md"
+                    fullWidth
+                >
+                    <div className='p-4'>
+
+
+                        <div className='flex items-center gap-3 p-4'>
+                            <PiBracketsCurlyBold size={30}/>
+
+                            <span className='text-xl font-bold'>
+                                Contenido en crudo del registro
+                            </span>
+                        </div>
+                        
+                            
+                        <div>
+
+                            <pre className="bg-[#f5f5f5] rounded-xl p-4 overflow-auto text-sm">
+                                {
+                                    JSON.stringify(value, null, 2)
+                                }
+                            </pre>
+
+                        </div>
+
+                        <div className='flex items-center justify-between p-4'>
+                            <div className='w-1 h-1'></div>
+                            
+
+                            <Button
+                                sx={{color: "black"}}
+                                 onClick={handleClose}>
+                                Cerrar
+                            </Button>
+                        </div>
+
+                    </div>
+
+                </Dialog>
+
+            </>
+        )
+    }
+
+    const rowData = useMemo(() => {
+        return source.map(src => ({
+            record_id: src.record_id,
+            spatial_id: src.spatial_id,
+            temporal_id: new Date(src.temporal_id).toLocaleDateString(
+                "es-MX",
+                {
+                    day: "2-digit",
+                    month: "short",
+                    year: "2-digit"
+                }
+            ),
+            interest_ids: src.interest_ids,
+            numerical_interest_ids: src.numerical_interest_ids,
+            raw_payload: src.raw_payload
+        }))
+    }, [source])
+
+    const [colDefs, setColDefs] = useState<ColDef[]>([
+         {
+            field: "record_id",
+            headerName: "ID Registro"
+        },
+        {
+            field: "spatial_id",
+            headerName: "Espacial (VS)",
+            cellRenderer: CustomSpatialRenderer
+        },
+        {
+            field: "temporal_id",
+            headerName: "Temporal (VT)"
+        },
+        {
+            field: "interest_ids",
+            headerName: "Interés (VI)",
+            cellRenderer: CustomInterestRenderer,
+            autoHeight: true
+        },
+        {
+            field: "numerical_interest_ids",
+            headerName: "Numérico",
+            cellRenderer: CustomNumericRenderer,
+            autoHeight: true
+        },
+        {
+            field: "raw_payload",
+            headerName: "Detalles",
+            cellRenderer: CustomDetailsRenderer
+        },
+    ]);
+
+
+
+    
+
+    const modules = [AllCommunityModule]
 
     if(loading)
     {
@@ -28,80 +216,19 @@ function ServiceCarouselSource({ source, loading }: ServiceCarouselProps)
                 source.length < 1 ? 
                     <NoDataScreen/>
                 :
-                    <table className='w-full h-full divide-y border-y border-y-gray-300 divide-gray-300'>
-                        <thead>
-                            <tr className="table-head bg-gray-200">
-                                <th className="table-head-box w-fit">ID REGISTRO</th>
-                                <th className="table-head-box w-fit">ESPACIAL (VS)</th>
-                                <th className="table-head-box w-fit">TEMPORAL (VT)</th>
-                                <th className="table-head-box w-fit">INTERÉS (VI)</th>
-                                <th className="table-head-box w-fit">NÚMERICO (VI)</th>
-                                <th className="table-head-box w-fit">DETALLES</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {
-                            source.map(reg => 
-                                <tr key={reg.record_id}>
-                                    <td className="table-body-box text-[#757575]">
-                                        {reg.record_id}
-                                    </td>
-                                    <td className="table-body-box">
-                                        <div className="bg-[#e6e6e6] text-xs font-bold py-2 px-3 w-fit rounded-4xl">
-                                            {reg.spatial_id}
-                                        </div>
-                                    </td>
-                                    <td className="table-body-box text-[#757575]">
-                                        {
-                                            new Date(reg.temporal_id).toLocaleDateString(
-                                                "es-MX",
-                                                {
-                                                    day: "2-digit",
-                                                    month: "2-digit",
-                                                    year: "numeric"
-                                                }
-                                            )
-                                        }
-                                    </td>
-                                    <td className="table-body-box">
-                                        {reg.interest_ids.map(interest_id =>
-                                            <div key={interest_id}>
-                                                {interest_id}
-                                            </div>
-                                        )}
-                                    </td>
-                                    <td className="table-body-box max-w-[300px]">
-                                        <div className="flex flex-wrap gap-1">
-                                        {
-                                            Object.entries(reg.numerical_interest_ids).map(
-                                                ([key, value]) => (
-                                                    <div key={key} className="py-1 px-2 text-[10px] bg-[#e6e6e6] rounded-2xl">
-                                                        {`${key.toLocaleUpperCase()}: ${Number(value).toFixed(0)}`}
-                                                    </div>
-                                                )
-                                            )
-                                        }
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div className="w-full h-full flex items-center justify-center">
-                                            <IconButton>
-                                                <Tooltip title="Copiar en texto plano">
-                                                    <IoIosCopy size={20} onClick={() => {
-                                                        navigator.clipboard.writeText(
-                                                            JSON.stringify(reg.raw_payload, null, 2)
-                                                        )
-                                                    }}/>
-                                                </Tooltip>
-                                            </IconButton>
-                                        </div>
-                                        
-                                    </td>
-                                </tr>
-                            )
-                        }
-                        </tbody>
-                    </table>
+                    <AgGridProvider modules={modules}>
+                        <AgGridReact 
+                            columnDefs={colDefs} 
+                            rowData={rowData}
+                            pagination={true}
+                            paginationPageSize={100}
+                            defaultColDef={{
+                                flex: 1,
+                                minWidth: 140,
+                                resizable: true
+                            }}
+                            />
+                    </AgGridProvider>
                 
             }
             

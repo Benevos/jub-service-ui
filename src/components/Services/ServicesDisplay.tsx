@@ -43,7 +43,7 @@ function ServicesDisplay()
                     {servicesData.length} servicios encontrados
                 </label>
                 :
-                <div className='h-1 w-1'></div>
+                <div className='font-bold text-[#757575] max-md:max-w-[180px]'>Realice una búsqueda para mostrar servicios</div>
             }
             
             <div>

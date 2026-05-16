@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import servicesReducer from "./features/services/servicesSlice"
 import observatoriesReducer from "./features/observatories/observatoriesSlice";
 import snackbarReducer from "./features/snackbar/snackbarSlice";
+import authReducer from "./features/auth/authSlice";
 
 export const makeStore = () => {
   return configureStore({
@@ -9,6 +10,7 @@ export const makeStore = () => {
         services: servicesReducer,
         observatories: observatoriesReducer,
         snackbar: snackbarReducer,
+        auth: authReducer
     }
   })
 }
