@@ -4,6 +4,8 @@ import Image from 'next/image'
 import React, { useState } from 'react'
 import FallbackSlide from './FallbackSlide'
 
+//TODO: Show download progress
+
 interface ImageSlideInterface {
     src: string
     alt: string

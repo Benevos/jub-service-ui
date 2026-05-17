@@ -1,8 +1,9 @@
 "use client"
 
 import React, { useEffect, useState } from 'react'
-import LoadingSlide from './LoadingSlide'
 import PerformanceSlide from './PerformanceSlide'
+import axios, { AxiosProgressEvent } from 'axios'
+import LoadingSlide from './LoadingSlide'
 
 interface HtmlSlideProps {
     src: string
@@ -12,6 +13,9 @@ interface HtmlSlideProps {
 function HtmlSlide({ src, performance=false }: HtmlSlideProps)
 {
     const [blobUrl, setBlobUrl] = useState<string | null>(null)
+
+    const [loading, setLoading] = useState(false)
+    const [progress, setProgress] = useState(0)
 
     useEffect(() =>
     {
@@ -23,22 +27,47 @@ function HtmlSlide({ src, performance=false }: HtmlSlideProps)
         {
             try
             {
-                const response = await fetch(src, {
-                    signal: controller.signal
+                setLoading(true)
+                setProgress(0)
+
+                const response = await axios.get(src, {
+                    responseType: 'blob',
+                    signal: controller.signal,
+
+                    onDownloadProgress: (progressEvent: AxiosProgressEvent) =>
+                    {
+                        // Algunos servidores no envían content-length
+                        if (!progressEvent.total) return
+
+                        const percent = Math.round(
+                            (progressEvent.loaded * 100) / progressEvent.total
+                        )
+
+                        setProgress(percent)
+                    }
                 })
 
-                const blob = await response.blob()
+                const blob = response.data
 
                 const url = URL.createObjectURL(blob)
 
                 setBlobUrl(url)
+
+                setProgress(100)
             }
             catch(error)
             {
-                if ((error as Error).name !== "AbortError")
+                if (!axios.isCancel(error))
                 {
-                    console.log("Peticion abordata")
+                    console.log("Petición abortada o error")
                 }
+            }
+            finally
+            {
+                setTimeout(() =>
+                {
+                    setLoading(false)
+                }, 300)
             }
         }
 
@@ -48,34 +77,36 @@ function HtmlSlide({ src, performance=false }: HtmlSlideProps)
         {
             controller.abort()
 
-            if (blobUrl)
+            setBlobUrl((prev) =>
             {
-                URL.revokeObjectURL(blobUrl)
-            }
+                if (prev)
+                {
+                    URL.revokeObjectURL(prev)
+                }
+
+                return null
+            })
         }
 
     }, [src, performance])
 
-    if (performance) {
+    if (performance)
+    {
         return <PerformanceSlide href={src} />
     }
 
-    if (!blobUrl) {
-        return <LoadingSlide />
+    if (!blobUrl)
+    {
+        return (
+            <LoadingSlide progress={progress}/>
+        )
     }
 
     return (
-        <>
-            {
-                performance ? 
-                    <PerformanceSlide href={src}/>
-                :
-                <iframe
-                    className='embla__slide w-full h-full bg-black'
-                    src={blobUrl}
-                />
-            }
-        </>
+        <iframe
+            className='embla__slide w-full h-full bg-black'
+            src={blobUrl}
+        />
     )
 }
 

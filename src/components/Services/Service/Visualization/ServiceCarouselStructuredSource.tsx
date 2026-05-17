@@ -5,8 +5,9 @@ import NoDataScreen from './NoDataScreen';
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Dialog, DialogContent, DialogTitle, IconButton, Tooltip } from '@mui/material';
 import { FaRegEye } from 'react-icons/fa';
-import { RxCross2 } from 'react-icons/rx';
 import { PiBracketsCurlyBold } from 'react-icons/pi';
+
+//TODO: Show download progress
 
 interface ServiceCarouselProps {
     source: DataSourceType[]

@@ -1,12 +1,10 @@
 import ProductType from '@/types/products'
 import useEmblaCarousel from 'embla-carousel-react'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import HtmlSlide from './Slides/HtmlSlide'
 import { useAppSelector } from '@/lib/hooks'
-import FallbackSlide from './Slides/FallbackSlide'
 import ImageSlide from './Slides/ImageSlide'
 import { GrCaretNext, GrCaretPrevious } from "react-icons/gr";
-import LoadingSlide from './Slides/LoadingSlide'
 import NoDataScreen from './NoDataScreen'
 
 interface ServiceCarouselProps {

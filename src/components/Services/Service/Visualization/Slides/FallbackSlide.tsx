@@ -1,8 +1,10 @@
-"use client"
+'use client'
 
 import { showSnackbar } from '@/lib/features/snackbar/snackbarSlice'
 import { useAppDispatch } from '@/lib/hooks'
-import { Button } from '@mui/material'
+import { Button, LinearProgress } from '@mui/material'
+import axios, { AxiosProgressEvent } from 'axios'
+import { useState } from 'react'
 import { FaRegQuestionCircle } from 'react-icons/fa'
 
 interface FallbackSlideProps {
@@ -13,32 +15,41 @@ function FallbackSlide({ href }: FallbackSlideProps)
 {
     const dispatch = useAppDispatch()
 
+    const [progress, setProgress] = useState(0)
+    const [downloading, setDownloading] = useState(false)
+    const [error, setError] = useState(false);
+
     const handleDownload = async () =>
     {
         try
         {
-            const response = await fetch(href)
+            setDownloading(true)
+            setProgress(0)
 
-            if (!response.ok)
-            {
-                let errorMessage = ""
+            const response = await axios.get(href, {
+                responseType: 'blob',
 
-                if (response.status === 404)
+                onDownloadProgress: (progressEvent: AxiosProgressEvent) =>
                 {
-                    errorMessage = "Archivo no enocontrado o inexistente."
+                    // Algunos servidores no envían content-length
+                    if (!progressEvent.total) return
+
+                    const percent = Math.round(
+                        (progressEvent.loaded * 100) / progressEvent.total
+                    )
+
+                    setProgress(percent)
                 }
+            })
 
-                throw new Error(`(${response.status}) ${errorMessage}`)
-            }
-
-            const blob = await response.blob()
+            const blob = response.data
 
             const url = window.URL.createObjectURL(blob)
 
-            const a = document.createElement("a")
+            const a = document.createElement('a')
 
             a.href = url
-            a.download = "archivo"
+            a.download = 'archivo'
 
             document.body.appendChild(a)
 
@@ -47,41 +58,81 @@ function FallbackSlide({ href }: FallbackSlideProps)
             a.remove()
 
             window.URL.revokeObjectURL(url)
+
+            setProgress(100)
         }
         catch(error)
         {
+            setError(true)
+
+            let errorMessage = 'Error al descargar archivo.'
+
+            if (axios.isAxiosError(error))
+            {
+                if (error.response?.status === 404)
+                {
+                    errorMessage = 'Archivo no encontrado o inexistente.'
+                }
+
+                errorMessage = `(${error.response?.status}) ${errorMessage}`
+            }
+
             dispatch(showSnackbar({
                 severity: "error",
-                message: `${error}`,
+                message: errorMessage,
                 anchorOrigin: {
                     vertical: "top",
                     horizontal: "center"
                 }
             }))
         }
+        finally
+        {
+            // Espera pequeña para que el usuario vea el 100%
+            setTimeout(() =>
+            {
+                setError(false)
+                setDownloading(false)
+                setProgress(0)
+            }, 800)
+        }
     }
 
     return (
-        <>
+        <div className='embla__slide w-full h-full flex flex-col items-center justify-center bg-black px-4'>
             
+            <div className='flex flex-col items-center mb-4'>
+                <FaRegQuestionCircle color='white' size={40}/>
 
-            <div className='embla__slide w-full h-full flex flex-col items-center justify-center bg-black'>
-                <div className='flex flex-col items-center mb-2'>
-                    <FaRegQuestionCircle color='white' size={40}/>
-
-                    <span className='text-white font-bold my-2'>
-                        Formato no soportado directamente
-                    </span>
-                </div>
-
-                <Button
-                    variant='contained'
-                    onClick={handleDownload}
-                >
-                    DESCARGAR PARA VER
-                </Button>
+                <span className='text-white font-bold my-2 text-center'>
+                    Formato no soportado directamente
+                </span>
             </div>
-        </>
+
+            {
+                !downloading ?
+                    <Button
+                        variant='contained'
+                        onClick={handleDownload}
+                        disabled={downloading}
+                    >
+                        DESCARGAR PARA VER
+                    </Button>
+                :
+                    <div className='w-full max-w-md max-md:w-[200px]'>
+                        
+                        <div className='text-white flex items-center justify-center mb-2'>
+                            {error ? "Error al descargar" : `Descargando: ${progress}%`}
+                        </div>
+
+                        <LinearProgress
+                            color={error ? "error" : "primary"}
+                            variant='determinate'
+                            value={progress}
+                        />
+                    </div>
+            }
+        </div>
     )
 }
 
