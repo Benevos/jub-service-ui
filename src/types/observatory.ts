@@ -6,7 +6,7 @@ export type ObservatoryType = {
     title: string
     description: string
     image_url: string
-    metadata: Record<string, unknown>
+    metadata: {type?: "datasource" | "sink"}
     view_count: number
     created_at: string
     updated_at: string

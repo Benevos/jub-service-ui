@@ -9,10 +9,9 @@ import { showSnackbar } from "@/lib/features/snackbar/snackbarSlice";
 import { useAppRequiredAuth, useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { ObservatoryDetailsType } from "@/types/observatory";
 import { useEffect } from "react";
-import { metadata } from "./layout";
 
 
-export function Home() 
+function Home() 
 {
   const dispatch = useAppDispatch()
 
@@ -157,9 +156,10 @@ export function Home()
 
   useEffect(() =>
   {
+    console.log(auth)
     fetchObservatories()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth])
+  }, [])
 
   useEffect(() => 
   {

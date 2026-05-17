@@ -7,6 +7,7 @@ import ServiceCardGrid from './Service/ServiceCardGrid'
 import ServiceCardList from './Service/ServiceCardList'
 import { CgPerformance } from 'react-icons/cg'
 import { setServicePerfomanceMode } from '@/lib/features/services/servicesSlice'
+import { showSnackbar } from '@/lib/features/snackbar/snackbarSlice'
 
 
 function ServicesDisplay() 
@@ -29,6 +30,19 @@ function ServicesDisplay()
 
     const handleServicePerformanceModeClick = () => 
     {
+        if(servicePerformanceMode === true)
+        {
+            dispatch(showSnackbar({
+                message: "Desactivar el modo rendimiento puede causar cierres inesperados o lentitud en equipos con pocos recursos.",
+                severity: "warning",
+                autoHideDuration: 5000,
+                anchorOrigin: {
+                    "vertical": "bottom",
+                    "horizontal": "center"
+                }
+            }))
+        }
+
         dispatch(setServicePerfomanceMode(!servicePerformanceMode));
     };
 

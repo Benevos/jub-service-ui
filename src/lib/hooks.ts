@@ -1,18 +1,29 @@
 import { useDispatch, useSelector, useStore } from 'react-redux'
 import type { TypedUseSelectorHook } from 'react-redux'
 import type { RootState, AppDispatch, AppStore } from './store'
+import { RequiredAuthType } from '@/types/auth'
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch: () => AppDispatch = useDispatch
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
 export const useAppStore: () => AppStore = useStore
 
-export const useAppRequiredAuth = () => {
+//TODO: Maybe changes reference every second because returning differnt type? Check this
+export const useAppRequiredAuth = (): RequiredAuthType => {
     const auth = useAppSelector(state => state.auth)
 
-    if (!auth.access_token || !auth.temporal_secret_key) {
+    if (!auth.access_token) 
+    {
         throw new Error("Auth not found");
     }
 
-    return auth
+    if (!auth.temporal_secret_key) 
+    {
+        throw new Error("Auth not found");
+    }
+
+    return {
+        access_token: auth.access_token,
+        temporal_secret_key: auth.temporal_secret_key
+    }
 }

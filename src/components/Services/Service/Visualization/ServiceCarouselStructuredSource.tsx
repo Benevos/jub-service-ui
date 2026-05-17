@@ -46,7 +46,7 @@ function ServiceCarouselStructuredSource({ source, loading }: ServiceCarouselPro
         }
 
         return (
-            <div className='w-full h-full flex flex-wrap gap-1 max-w-[400px] py-2'>
+            <div className='w-full h-full flex flex-wrap gap-1 py-2'>
                 {
                     Object.entries(value).map(
                         ([key, val]) => <div key={key} className='bg-[#e6e6e6] rounded-full text-[10px] h-5 px-1.5 
@@ -180,13 +180,15 @@ function ServiceCarouselStructuredSource({ source, loading }: ServiceCarouselPro
             field: "interest_ids",
             headerName: "Interés (VI)",
             cellRenderer: CustomInterestRenderer,
-            autoHeight: true
+            autoHeight: true,
+            
         },
         {
             field: "numerical_interest_ids",
             headerName: "Numérico",
             cellRenderer: CustomNumericRenderer,
-            autoHeight: true
+            autoHeight: true,
+            
         },
         {
             field: "raw_payload",
@@ -211,7 +213,7 @@ function ServiceCarouselStructuredSource({ source, loading }: ServiceCarouselPro
     }
     
     return (
-        <div className="h-[600px] max-md:h-[300px] overflow-x-auto">
+        <div className="h-[600px] max-md:h-[600px] overflow-x-auto">
 
             {
                 source.length < 1 ? 
