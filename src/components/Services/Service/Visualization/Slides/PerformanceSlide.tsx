@@ -9,9 +9,11 @@ import { useAppDispatch } from '@/lib/hooks'
 
 interface PerformanceSlideProps {
     href: string
+    filename?: string | null | undefined
+    extension?: string | null | undefined
 }
 
-function PerformanceSlide({ href }: PerformanceSlideProps) 
+function PerformanceSlide({ href, filename, extension }: PerformanceSlideProps) 
 {
     const dispatch = useAppDispatch()
 
@@ -49,7 +51,7 @@ function PerformanceSlide({ href }: PerformanceSlideProps)
             const a = document.createElement('a')
 
             a.href = url
-            a.download = 'archivo'
+            a.download = filename ? filename : 'archivo'
 
             document.body.appendChild(a)
 
@@ -117,7 +119,7 @@ function PerformanceSlide({ href }: PerformanceSlideProps)
                     variant='contained'
                     disabled={downloading}
                     >
-                        DESCARGAR PARA VER   
+                        DESCARGAR PARA VER {extension ? `(${extension.toLocaleUpperCase()})` : ""}  
                     </Button>
                 :
                     <div className='w-full max-w-md max-md:w-[200px]'>

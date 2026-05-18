@@ -9,9 +9,11 @@ import { FaRegQuestionCircle } from 'react-icons/fa'
 
 interface FallbackSlideProps {
     href: string
+    filename?: string | null | undefined
+    extension?: string | null | undefined
 }
 
-function FallbackSlide({ href }: FallbackSlideProps) 
+function FallbackSlide({ href, filename, extension }: FallbackSlideProps) 
 {
     const dispatch = useAppDispatch()
 
@@ -49,7 +51,7 @@ function FallbackSlide({ href }: FallbackSlideProps)
             const a = document.createElement('a')
 
             a.href = url
-            a.download = 'archivo'
+            a.download = filename ? filename : 'archivo'
 
             document.body.appendChild(a)
 
@@ -72,6 +74,11 @@ function FallbackSlide({ href }: FallbackSlideProps)
                 if (error.response?.status === 404)
                 {
                     errorMessage = 'Archivo no encontrado o inexistente.'
+                }
+
+                else if (error.code === "ERR_NETWORK")
+                {
+                    errorMessage = 'Error de red o posible problema de CORS.'
                 }
 
                 errorMessage = `(${error.response?.status}) ${errorMessage}`
@@ -114,9 +121,8 @@ function FallbackSlide({ href }: FallbackSlideProps)
                     <Button
                         variant='contained'
                         onClick={handleDownload}
-                        disabled={downloading}
                     >
-                        DESCARGAR PARA VER
+                        DESCARGAR PARA VER {extension ? ` (${extension})` : ""}
                     </Button>
                 :
                     <div className='w-full max-w-md max-md:w-[200px]'>

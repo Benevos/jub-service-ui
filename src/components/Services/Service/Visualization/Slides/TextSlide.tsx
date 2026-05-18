@@ -5,19 +5,22 @@ import PerformanceSlide from './PerformanceSlide'
 import axios, { AxiosProgressEvent } from 'axios'
 import LoadingSlide from './LoadingSlide'
 
-interface HtmlSlideProps {
+interface TextSlideProps {
     src: string
-    filename?: string | null | undefined
+    filename?: string
     performance?: boolean
-    extension?: string | null | undefined
 }
 
-function HtmlSlide({ src, filename, extension, performance=false }: HtmlSlideProps)
+function TextSlide({
+    src,
+    filename,
+    performance = false
+}: TextSlideProps)
 {
-    const [blobUrl, setBlobUrl] = useState<string | null>(null)
-
     const [loading, setLoading] = useState(false)
     const [progress, setProgress] = useState(0)
+
+    const [textContent, setTextContent] = useState("")
 
     useEffect(() =>
     {
@@ -25,7 +28,7 @@ function HtmlSlide({ src, filename, extension, performance=false }: HtmlSlidePro
 
         const controller = new AbortController()
 
-        const loadHtml = async () =>
+        const loadText = async () =>
         {
             try
             {
@@ -33,12 +36,11 @@ function HtmlSlide({ src, filename, extension, performance=false }: HtmlSlidePro
                 setProgress(0)
 
                 const response = await axios.get(src, {
-                    responseType: 'blob',
+                    responseType: "blob",
                     signal: controller.signal,
 
                     onDownloadProgress: (progressEvent: AxiosProgressEvent) =>
                     {
-                        // Algunos servidores no envían content-length
                         if (!progressEvent.total) return
 
                         const percent = Math.round(
@@ -49,11 +51,11 @@ function HtmlSlide({ src, filename, extension, performance=false }: HtmlSlidePro
                     }
                 })
 
-                const blob = response.data
+                const blob: Blob = response.data
 
-                const url = URL.createObjectURL(blob)
+                const text = await blob.text()
 
-                setBlobUrl(url)
+                setTextContent(text)
 
                 setProgress(100)
             }
@@ -61,7 +63,7 @@ function HtmlSlide({ src, filename, extension, performance=false }: HtmlSlidePro
             {
                 if (!axios.isCancel(error))
                 {
-                    console.log("Petición abortada o error")
+                    console.log(error)
                 }
             }
             finally
@@ -73,31 +75,26 @@ function HtmlSlide({ src, filename, extension, performance=false }: HtmlSlidePro
             }
         }
 
-        loadHtml()
+        loadText()
 
         return () =>
         {
             controller.abort()
-
-            setBlobUrl((prev) =>
-            {
-                if (prev)
-                {
-                    URL.revokeObjectURL(prev)
-                }
-
-                return null
-            })
         }
 
     }, [src, performance])
 
     if (performance)
     {
-        return <PerformanceSlide href={src} filename={filename} extension={extension}/>
+        return (
+            <PerformanceSlide
+                href={src}
+                filename={filename}
+            />
+        )
     }
 
-    if (!blobUrl)
+    if (loading)
     {
         return (
             <LoadingSlide progress={progress}/>
@@ -105,11 +102,12 @@ function HtmlSlide({ src, filename, extension, performance=false }: HtmlSlidePro
     }
 
     return (
-        <iframe
-            className='embla__slide w-full h-full bg-black'
-            src={blobUrl}
-        />
+        <div className='embla__slide h-full w-full overflow-auto bg-black p-4'>
+            <pre className='text-white whitespace-pre-wrap break-words font-mono text-sm'>
+                {textContent}
+            </pre>
+        </div>
     )
 }
 
-export default HtmlSlide
+export default TextSlide

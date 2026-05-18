@@ -1,36 +1,81 @@
 import ProductType from '@/types/products'
 import useEmblaCarousel from 'embla-carousel-react'
-import { useEffect, useState } from 'react'
-import HtmlSlide from './Slides/HtmlSlide'
+import { ChangeEvent, useEffect, useState } from 'react'
+import HtmlSlide from '../Slides/HtmlSlide'
 import { useAppSelector } from '@/lib/hooks'
-import ImageSlide from './Slides/ImageSlide'
+import ImageSlide from '../Slides/ImageSlide'
 import { GrCaretNext, GrCaretPrevious } from "react-icons/gr";
-import NoDataScreen from './NoDataScreen'
+import NoDataScreen from '../NoDataScreen'
+import CSVSlide from '../Slides/CSVSlide'
 
-interface ServiceCarouselProps {
+interface ProductDisplayProps {
     sources: ProductType[]
     loading: boolean
+    onIndexChange: (index: number) => void
 }
 
-function ServiceCarouselSink({ sources, loading }: ServiceCarouselProps) 
+function ProductDisplay({ sources, loading, onIndexChange }: ProductDisplayProps) 
 {
     const servicePerformanceMode = useAppSelector(state => state.services.performanceMode)
 
     const [currentIndex, setCurrentIndex] = useState(0)
+    const [inputValue, setInputValue] = useState(currentIndex + 1)
 
     const [emblaRef, emblaApi] = useEmblaCarousel({
-        loop: false
+        loop: false,
     })
 
     const goToPrev = () => emblaApi?.scrollPrev()
     const goToNext = () => emblaApi?.scrollNext()
+
+    const goToIndex = (rawValue: string | number) => 
+    {
+        const value = Number(rawValue)
+
+        if (!emblaApi || Number.isNaN(value)) return
+
+        const index = value - 1
+
+        const safeIndex = Math.max(
+            0,
+            Math.min(index, sources.length - 1)
+        )
+
+        emblaApi.scrollTo(safeIndex)
+    }
+
+    const handleChange = ( { target: { value } }: ChangeEvent<HTMLInputElement> ) =>
+    {
+        const index = Number(value)
+
+        if (Number.isNaN(index))
+        {
+            setInputValue(currentIndex)
+            return
+        }
+
+        setInputValue(index)
+    }
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        goToIndex(e.target.value)
+    }
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => 
+    {
+        if (e.key !== 'Enter') return
+
+        goToIndex(e.currentTarget.value)
+    }
 
     useEffect(() => {
 
         if (!emblaApi) return
 
         const onSelect = () => {
-            setCurrentIndex(emblaApi.selectedScrollSnap())
+            const index = emblaApi.selectedScrollSnap()
+            setCurrentIndex(index)
+            onIndexChange(index)
         }
 
         onSelect()
@@ -42,6 +87,11 @@ function ServiceCarouselSink({ sources, loading }: ServiceCarouselProps)
         }
 
     }, [emblaApi])
+
+    useEffect(() => {
+        /* eslint-disable-next-line react-hooks/set-state-in-effect */
+        setInputValue(currentIndex + 1)
+    }, [currentIndex])
 
     if(loading)
     {
@@ -74,18 +124,27 @@ function ServiceCarouselSink({ sources, loading }: ServiceCarouselProps)
 
                             const key = `${source.product_id}-${index}`
 
-
-                            const shouldRender =
-                                index === currentIndex ||
-                                index === currentIndex - 1 ||
-                                index === currentIndex + 1
-
                             if(source.metadata?.extension?.toLowerCase() === "html")
                             {
                                 return (
                                     <HtmlSlide
                                         key={key}
+                                        filename={source.name}
                                         performance={servicePerformanceMode}
+                                        extension={source.metadata.extension}
+                                        src={src}
+                                    />
+                                )
+                            }
+
+                            if(source.metadata?.extension?.toLowerCase() === "csv")
+                            {
+                                return (
+                                    <CSVSlide
+                                        key={key}
+                                        filename={source.name}
+                                        performance={servicePerformanceMode}
+                                        extension={source.metadata.extension}
                                         src={src}
                                     />
                                 )
@@ -94,8 +153,10 @@ function ServiceCarouselSink({ sources, loading }: ServiceCarouselProps)
                             return (
                                 <ImageSlide
                                     key={key}
+                                    filename={source.name}
                                     alt={source.product_id}
                                     src={src}
+                                    extension={source.metadata?.extension}
                                 />
                             )
                         })
@@ -105,8 +166,14 @@ function ServiceCarouselSink({ sources, loading }: ServiceCarouselProps)
             </div>
 
             <div className='absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-lg bg-white px-4 py-2 shadow'>
+                <input style={{ width: `${String(inputValue).length + 1}ch` }}
+                       size={String(inputValue).length}
+                       onKeyDown={handleKeyDown}
+                       onChange={handleChange}
+                       onBlur={handleBlur} 
+                       value={inputValue}/>
                 <span className='font-bold'>
-                    {currentIndex + 1}/{sources.length}
+                    / {sources.length}
                 </span>
             </div>
 
@@ -128,4 +195,4 @@ function ServiceCarouselSink({ sources, loading }: ServiceCarouselProps)
     )
 }
 
-export default ServiceCarouselSink
+export default ProductDisplay

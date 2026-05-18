@@ -4,20 +4,29 @@ import React, { useEffect, useState } from 'react'
 import PerformanceSlide from './PerformanceSlide'
 import axios, { AxiosProgressEvent } from 'axios'
 import LoadingSlide from './LoadingSlide'
+import { AllCommunityModule, ColDef } from "ag-grid-community";
+import Papa from "papaparse"
+import { AgGridProvider, AgGridReact } from 'ag-grid-react'
 
-interface HtmlSlideProps {
+interface CSVSlideProps {
     src: string
     filename?: string | null | undefined
     performance?: boolean
     extension?: string | null | undefined
 }
 
-function HtmlSlide({ src, filename, extension, performance=false }: HtmlSlideProps)
+type CSVRow = Record<string, string | number | boolean>
+
+function CSVSlide({ src, filename, extension, performance=false }: CSVSlideProps)
 {
     const [blobUrl, setBlobUrl] = useState<string | null>(null)
 
     const [loading, setLoading] = useState(false)
     const [progress, setProgress] = useState(0)
+
+    const [colDefs, setColDefs] = useState<ColDef[]>([])
+    const [rowData, setRowData] = useState<CSVRow[]>([])
+    const modules = [AllCommunityModule]
 
     useEffect(() =>
     {
@@ -49,11 +58,26 @@ function HtmlSlide({ src, filename, extension, performance=false }: HtmlSlidePro
                     }
                 })
 
-                const blob = response.data
+                const blob: Blob = response.data
 
                 const url = URL.createObjectURL(blob)
 
                 setBlobUrl(url)
+
+                const text = await blob.text()
+
+                const parsed = Papa.parse<CSVRow>(text, {
+                    header: true,
+                    dynamicTyping: true,
+                    skipEmptyLines: true
+                }) 
+
+                const columns: ColDef[] = !parsed.meta.fields ? [] : parsed.meta.fields.map(field => ({
+                    field: field,
+                }))
+                
+                setColDefs(columns)
+                setRowData(parsed.data)
 
                 setProgress(100)
             }
@@ -105,11 +129,20 @@ function HtmlSlide({ src, filename, extension, performance=false }: HtmlSlidePro
     }
 
     return (
-        <iframe
-            className='embla__slide w-full h-full bg-black'
-            src={blobUrl}
-        />
+        <div className='embla__slide h-full text-black'>
+            <AgGridProvider modules={modules}>
+                <AgGridReact
+                    rowData={rowData}
+                    columnDefs={colDefs}
+                    pagination={true}
+                    paginationPageSize={100}
+                    autoSizeStrategy={{
+                        type: 'fitGridWidth'
+                    }}
+                />
+            </AgGridProvider>
+        </div>
     )
 }
 
-export default HtmlSlide
+export default CSVSlide

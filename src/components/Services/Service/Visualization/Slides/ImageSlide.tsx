@@ -9,16 +9,18 @@ import FallbackSlide from './FallbackSlide'
 interface ImageSlideInterface {
     src: string
     alt: string
+    filename?: string
+    extension?: string | null | undefined
 }
 
-function ImageSlide({ src, alt }: ImageSlideInterface) 
+function ImageSlide({ src, alt, filename, extension }: ImageSlideInterface) 
 {
     const [failed, setFailed] = useState(false)
 
     if (failed)
     {
         return (
-            <FallbackSlide href={src}/>
+            <FallbackSlide href={src} filename={filename} extension={extension}/>
         )
     }
 

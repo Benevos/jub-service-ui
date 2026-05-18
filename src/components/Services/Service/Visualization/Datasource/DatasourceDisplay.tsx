@@ -1,7 +1,7 @@
 import { DataSourceType } from '@/types/datasource'
 import { AllCommunityModule, ColDef } from "ag-grid-community";
 import { AgGridProvider, AgGridReact, CustomCellRendererProps } from 'ag-grid-react';
-import NoDataScreen from './NoDataScreen';
+import NoDataScreen from '../NoDataScreen';
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Dialog, DialogContent, DialogTitle, IconButton, Tooltip } from '@mui/material';
 import { FaRegEye } from 'react-icons/fa';
@@ -9,12 +9,12 @@ import { PiBracketsCurlyBold } from 'react-icons/pi';
 
 //TODO: Show download progress
 
-interface ServiceCarouselProps {
+interface DatasourceDisplayProps {
     source: DataSourceType[]
     loading: boolean
 }
 
-function ServiceCarouselStructuredSource({ source, loading }: ServiceCarouselProps) 
+function DatasourceDisplay({ source, loading }: DatasourceDisplayProps) 
 {
     const CustomSpatialRenderer = ({ value } : CustomCellRendererProps<DataSourceType, number>) => (
         <span className='bg-[#e6e6e6] rounded-full px-2 py-1'>{value}</span>
@@ -31,7 +31,16 @@ function ServiceCarouselStructuredSource({ source, loading }: ServiceCarouselPro
             )
         }
 
-        return value.map(val => <span key={val} className='bg-[#e6e6e6] rounded-full px-2 py-1'>{val}</span>)
+        return (
+            <div className='w-full h-full flex flex-wrap items-start gap-1 py-2'>
+                {
+                    value.map(
+                        val => <span key={val} className='bg-[#e6e6e6] rounded-full h-[30px] px-2 py-1 flex items-center justify-center'>{val}</span>
+                    )
+                }
+            </div>
+        )
+        
     }
 
     const CustomNumericRenderer = ({ value } : CustomCellRendererProps<DataSourceType, Record<string, string | number>>) => {
@@ -239,4 +248,4 @@ function ServiceCarouselStructuredSource({ source, loading }: ServiceCarouselPro
     )
 }
 
-export default ServiceCarouselStructuredSource
+export default DatasourceDisplay
