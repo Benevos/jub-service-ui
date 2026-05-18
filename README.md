@@ -40,9 +40,6 @@ Parámetros:
 
 2. Visite la ruta [http:localhost:3000](https:localhost:3000) donde se desplegó su contenedor. Si especificó el parámetro `--host-port`, entonces reemplace el puerto con el ingresado en el parámetro.
 
-
-
-
 ### Manual
 
 Para una configuración manual continue con los siguientes pasos.
