@@ -56,7 +56,7 @@ function ProtectedRoute<P extends object>(
 
                 setError(
                     error instanceof Error
-                        ? error.message
+                        ? "No fue posible conectarse al servicio de autenticación."
                         : "Ocurrió un error inesperado."
                 );
 

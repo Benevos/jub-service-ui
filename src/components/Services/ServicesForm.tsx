@@ -94,11 +94,24 @@ function ServicesForm() {
     
           dispatch(setServicesData(data))
     
-          dispatch(setServicesLoading(false))
-
           dispatch(setFetchedServices(true))
-        } catch (error) {
-          console.error(error);
+        } 
+        catch (error) 
+        {
+          console.log(error);
+
+          dispatch(showSnackbar({
+                message: "Error al consultar servicios.",
+                severity: "error",
+                anchorOrigin: {
+                    vertical: "bottom",
+                    horizontal: "center"
+                }
+            }));
+        }
+        finally
+        {
+            dispatch(setServicesLoading(false))
         }
     };
 

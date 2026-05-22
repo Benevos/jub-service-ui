@@ -156,7 +156,16 @@ function Home()
 
   useEffect(() =>
   {
-    console.log(auth)
+    dispatch(showSnackbar({
+      message: "Este servicio aún se encuentra en mantenimiento activo, errores inesperados podrían estar presentes.",
+      severity: "warning",
+      anchorOrigin: {
+        vertical: "top",
+        horizontal: "center"
+      },
+      autoHideDuration: 5000
+    }))
+
     fetchObservatories()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
