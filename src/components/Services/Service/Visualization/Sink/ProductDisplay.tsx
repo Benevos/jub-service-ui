@@ -120,6 +120,7 @@ function ProductDisplay({ sources, loading, onIndexChange }: ProductDisplayProps
 
                     {
                         sources.map((source, index) => {
+
                             const src = `https://apix.tamps.cinvestav.mx/jub/api/v2/products/${source.product_id}/download`
 
                             const key = `${source.product_id}-${index}`
@@ -128,6 +129,7 @@ function ProductDisplay({ sources, loading, onIndexChange }: ProductDisplayProps
                             {
                                 return (
                                     <HtmlSlide
+
                                         key={key}
                                         filename={source.name}
                                         performance={servicePerformanceMode}

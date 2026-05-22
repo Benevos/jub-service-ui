@@ -9,7 +9,7 @@ function NotFound() {
     const router = useRouter();
 
     return (
-        <main className="h-dvh w-full flex items-center justify-center bg-[#f5f5f5] px-4">
+        <main className="h-dvh w-full flex items-center justify-center  px-4">
 
             <div className="bg-white rounded-3xl shadow-2xl px-10 py-12 flex flex-col items-center gap-6 max-w-[500px] w-full">
 

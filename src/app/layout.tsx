@@ -4,6 +4,10 @@ import "../scss/globals.scss";
 import "./tailwind.css"
 import Providers from "@/components/Providers";
 import GlobalSnackbar from "@/components/GlobalSnackbar";
+import GlobalDrawer from "@/components/GlobalDrawer";
+import { MdMenu } from "react-icons/md";
+import { IconButton } from "@mui/material";
+import GlobalTopBar from "@/components/GlobalTopBar";
 
 const roboto = Roboto({ 
   subsets: ['latin'], 
@@ -21,11 +25,19 @@ export default function RootLayout({ children } : Readonly<{children: React.Reac
       lang="en"
       className={`${roboto.className} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full">
         <Providers>
-          <GlobalSnackbar/>
+          
+          <GlobalTopBar/>
 
-          {children}
+          <div className="flex flex-col">
+
+            <GlobalSnackbar/>
+
+            <GlobalDrawer/>
+
+            {children}
+          </div>
         </Providers>
       </body>
     </html>

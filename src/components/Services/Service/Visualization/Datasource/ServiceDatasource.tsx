@@ -143,6 +143,8 @@ function ServiceDatasource()
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${auth.access_token}`,
+                    "Temporal-Secret-Key": auth.temporal_secret_key,
                 },
                 body: JSON.stringify({
                     observatory_id: coincidentObservatory,

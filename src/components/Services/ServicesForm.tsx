@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { setServicesLoading, setServicesData, setFetchedServices } from '@/lib/features/services/servicesSlice'
-import { useAppDispatch, useAppSelector } from '@/lib/hooks'
+import { useAppDispatch, useAppRequiredAuth, useAppSelector } from '@/lib/hooks'
 import { Button, IconButton, MenuItem, Select, SelectChangeEvent, Snackbar, SnackbarCloseReason, TextField, Tooltip } from '@mui/material'
 import { FaRegEye, FaSearch } from 'react-icons/fa'
 import { GoServer } from 'react-icons/go'
@@ -21,6 +21,8 @@ function ServicesForm() {
     
     const loading = useAppSelector(state => state.services.loading)
     const observatoriesLoading = useAppSelector(state => state.observatories.loading)
+
+    const auth = useAppRequiredAuth()
 
     const [serviceFilters, setServiceFilters] = useState<ServiceFilters>({
         name: "",
@@ -72,6 +74,8 @@ function ServicesForm() {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${auth.access_token}`,
+                "Temporal-Secret-Key": auth.temporal_secret_key,
               },
               body: JSON.stringify({
                 query: jubQuery,

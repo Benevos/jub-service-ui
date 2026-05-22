@@ -7,8 +7,8 @@ import LoadingSlide from './LoadingSlide'
 
 interface HtmlSlideProps {
     src: string
-    filename?: string | null | undefined
     performance?: boolean
+    filename?: string | null | undefined
     extension?: string | null | undefined
 }
 
@@ -91,6 +91,7 @@ function HtmlSlide({ src, filename, extension, performance=false }: HtmlSlidePro
         }
 
     }, [src, performance])
+
 
     if (performance)
     {
