@@ -1,7 +1,7 @@
 'use client'
 
 import { showSnackbar } from '@/lib/features/snackbar/snackbarSlice'
-import { useAppDispatch } from '@/lib/hooks'
+import { useAppDispatch, useAppRequiredAuth } from '@/lib/hooks'
 import { Button, LinearProgress } from '@mui/material'
 import axios, { AxiosProgressEvent } from 'axios'
 import { useState } from 'react'
@@ -21,6 +21,8 @@ function FallbackSlide({ href, filename, extension }: FallbackSlideProps)
     const [downloading, setDownloading] = useState(false)
     const [error, setError] = useState(false);
 
+    const auth = useAppRequiredAuth()
+
     const handleDownload = async () =>
     {
         try
@@ -30,7 +32,10 @@ function FallbackSlide({ href, filename, extension }: FallbackSlideProps)
 
             const response = await axios.get(href, {
                 responseType: 'blob',
-
+                headers: {
+                    "Authorization": `Bearer ${auth.access_token}`,
+                    "Temporal-Secret-Key": auth.temporal_secret_key,
+                },
                 onDownloadProgress: (progressEvent: AxiosProgressEvent) =>
                 {
                     // Algunos servidores no envían content-length

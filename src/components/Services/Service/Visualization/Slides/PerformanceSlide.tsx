@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 import { CgPerformance } from 'react-icons/cg'
 import axios, { AxiosProgressEvent } from 'axios'
 import { showSnackbar } from '@/lib/features/snackbar/snackbarSlice'
-import { useAppDispatch } from '@/lib/hooks'
+import { useAppDispatch, useAppRequiredAuth } from '@/lib/hooks'
 
 interface PerformanceSlideProps {
     href: string
@@ -21,6 +21,8 @@ function PerformanceSlide({ href, filename, extension }: PerformanceSlideProps)
     const [downloading, setDownloading] = useState(false)
     const [error, setError] = useState(false);
 
+    const auth = useAppRequiredAuth()
+
     const handleDownload = async () =>
     {
         try
@@ -30,7 +32,10 @@ function PerformanceSlide({ href, filename, extension }: PerformanceSlideProps)
 
             const response = await axios.get(href, {
                 responseType: 'blob',
-
+                headers: {
+                    "Authorization": `Bearer ${auth.access_token}`,
+                    "Temporal-Secret-Key": auth.temporal_secret_key,
+                },
                 onDownloadProgress: (progressEvent: AxiosProgressEvent) =>
                 {
                     // Algunos servidores no envían content-length

@@ -7,6 +7,7 @@ import LoadingSlide from './LoadingSlide'
 import { AllCommunityModule, ColDef } from "ag-grid-community";
 import Papa from "papaparse"
 import { AgGridProvider, AgGridReact } from 'ag-grid-react'
+import { useAppRequiredAuth } from '@/lib/hooks'
 
 interface CSVSlideProps {
     src: string
@@ -28,6 +29,8 @@ function CSVSlide({ src, filename, extension, performance=false }: CSVSlideProps
     const [rowData, setRowData] = useState<CSVRow[]>([])
     const modules = [AllCommunityModule]
 
+    const auth = useAppRequiredAuth()
+
     useEffect(() =>
     {
         if (performance) return
@@ -44,7 +47,10 @@ function CSVSlide({ src, filename, extension, performance=false }: CSVSlideProps
                 const response = await axios.get(src, {
                     responseType: 'blob',
                     signal: controller.signal,
-
+                    headers: {
+                        "Authorization": `Bearer ${auth.access_token}`,
+                        "Temporal-Secret-Key": auth.temporal_secret_key,
+                    },
                     onDownloadProgress: (progressEvent: AxiosProgressEvent) =>
                     {
                         // Algunos servidores no envían content-length

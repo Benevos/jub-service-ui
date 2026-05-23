@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react'
 import PerformanceSlide from './PerformanceSlide'
 import axios, { AxiosProgressEvent } from 'axios'
 import LoadingSlide from './LoadingSlide'
+import FallbackSlide from './FallbackSlide'
+import { useAppRequiredAuth } from '@/lib/hooks'
 
 interface HtmlSlideProps {
     src: string
@@ -19,6 +21,8 @@ function HtmlSlide({ src, filename, extension, performance=false }: HtmlSlidePro
     const [loading, setLoading] = useState(false)
     const [progress, setProgress] = useState(0)
 
+    const auth = useAppRequiredAuth()
+
     useEffect(() =>
     {
         if (performance) return
@@ -33,6 +37,10 @@ function HtmlSlide({ src, filename, extension, performance=false }: HtmlSlidePro
                 setProgress(0)
 
                 const response = await axios.get(src, {
+                    headers: {
+                        "Authorization": `Bearer ${auth.access_token}`,
+                        "Temporal-Secret-Key": auth.temporal_secret_key,
+                    },
                     responseType: 'blob',
                     signal: controller.signal,
 
@@ -96,6 +104,13 @@ function HtmlSlide({ src, filename, extension, performance=false }: HtmlSlidePro
     if (performance)
     {
         return <PerformanceSlide href={src} filename={filename} extension={extension}/>
+    }
+
+    if (!blobUrl && progress >= 100)
+    {
+        return (
+            <FallbackSlide href={src} extension={extension} filename={filename}/>
+        )
     }
 
     if (!blobUrl)
